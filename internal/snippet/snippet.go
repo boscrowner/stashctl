@@ -14,9 +14,9 @@ type Snippet struct {
 }
 
 // New creates a new Snippet with a generated ID and normalized tags.
-func New(title, content, language string, tags []string) *Snippet {
+func New(title, content, language string, tags []string) Snippet {
 	now := time.Now().UTC()
-	return &Snippet{
+	return Snippet{
 		ID:        generateID(),
 		Title:     title,
 		Content:   content,
@@ -27,8 +27,8 @@ func New(title, content, language string, tags []string) *Snippet {
 	}
 }
 
-// HasTag reports whether the snippet has the given tag (case-insensitive).
-func (s *Snippet) HasTag(tag string) bool {
+// HasTag returns true if the snippet has the given tag (case-insensitive).
+func (s Snippet) HasTag(tag string) bool {
 	for _, t := range s.Tags {
 		if t == tag {
 			return true
@@ -37,8 +37,8 @@ func (s *Snippet) HasTag(tag string) bool {
 	return false
 }
 
-// HasAllTags reports whether the snippet has all of the given tags.
-func (s *Snippet) HasAllTags(tags []string) bool {
+// HasAllTags returns true if the snippet has all of the given tags.
+func (s Snippet) HasAllTags(tags []string) bool {
 	for _, tag := range NormalizeTags(tags) {
 		if !s.HasTag(tag) {
 			return false

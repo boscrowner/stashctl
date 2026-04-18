@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// NormalizeTags deduplicates, lowercases, trims, and sorts a slice of tags.
+// NormalizeTags lowercases, trims, deduplicates, and sorts tags.
 func NormalizeTags(tags []string) []string {
 	seen := make(map[string]struct{})
 	result := []string{}
@@ -23,13 +23,13 @@ func NormalizeTags(tags []string) []string {
 	return result
 }
 
-// ParseTags splits a comma-separated tag string into a normalized slice.
-func ParseTags(raw string) []string {
-	parts := strings.Split(raw, ",")
+// ParseTags splits a comma-separated tag string into normalized tags.
+func ParseTags(input string) []string {
+	parts := strings.Split(input, ",")
 	return NormalizeTags(parts)
 }
 
-// TagsEqual returns true if two tag slices contain the same elements.
+// TagsEqual returns true if two tag slices contain the same tags.
 func TagsEqual(a, b []string) bool {
 	na := NormalizeTags(a)
 	nb := NormalizeTags(b)
