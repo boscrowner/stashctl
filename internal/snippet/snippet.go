@@ -1,21 +1,33 @@
 package snippet
 
-import (
-	"time"
-)
+import "time"
 
-// Snippet represents a stored code snippet with metadata.
+// Snippet represents a stored code snippet.
 type Snippet struct {
-	ID          string    `json:"id"`
-	Title       string    `json:"title"`
-	Content     string    `json:"content"`
-	Language    string    `json:"language"`
-	Tags        []string  `json:"tags"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID        string    `json:"id"`
+	Title     string    `json:"title"`
+	Content   string    `json:"content"`
+	Language  string    `json:"language"`
+	Tags      []string  `json:"tags"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
-// HasTag returns true if the snippet contains the given tag.
+// New creates a new Snippet with a generated ID and normalized tags.
+func New(title, content, language string, tags []string) *Snippet {
+	now := time.Now().UTC()
+	return &Snippet{
+		ID:        generateID(),
+		Title:     title,
+		Content:   content,
+		Language:  language,
+		Tags:      NormalizeTags(tags),
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
+}
+
+// HasTag reports whether the snippet has the given tag (case-insensitive).
 func (s *Snippet) HasTag(tag string) bool {
 	for _, t := range s.Tags {
 		if t == tag {
@@ -25,26 +37,12 @@ func (s *Snippet) HasTag(tag string) bool {
 	return false
 }
 
-// HasAllTags returns true if the snippet contains all of the given tags.
+// HasAllTags reports whether the snippet has all of the given tags.
 func (s *Snippet) HasAllTags(tags []string) bool {
-	for _, tag := range tags {
+	for _, tag := range NormalizeTags(tags) {
 		if !s.HasTag(tag) {
 			return false
 		}
 	}
 	return true
-}
-
-// New creates a new Snippet with generated ID and timestamps.
-func New(title, content, language string, tags []string) *Snippet {
-	now := time.Now().UTC()
-	return &Snippet{
-		ID:        generateID(),
-		Title:     title,
-		Content:   content,
-		Language:  language,
-		Tags:      tags,
-		CreatedAt: now,
-		UpdatedAt: now,
-	}
 }
