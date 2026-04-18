@@ -15,7 +15,7 @@ func TestNormalizeTagsSorted(t *testing.T) {
 	tags := NormalizeTags([]string{"zebra", "apple", "mango"})
 	expected := []string{"apple", "mango", "zebra"}
 	if !TagsEqual(tags, expected) {
-		t.Fatalf("expected %v, got %v", expected, tags)
+		t.Fatalf("expected sorted tags, got %v", tags)
 	}
 }
 
@@ -27,18 +27,18 @@ func TestNormalizeTagsStripsEmpty(t *testing.T) {
 }
 
 func TestParseTags(t *testing.T) {
-	tags := ParseTags("go, CLI , Go")
-	expected := []string{"cli", "go"}
+	tags := ParseTags("Go, CLI,  util , Go")
+	expected := []string{"cli", "go", "util"}
 	if !TagsEqual(tags, expected) {
 		t.Fatalf("expected %v, got %v", expected, tags)
 	}
 }
 
 func TestTagsEqual(t *testing.T) {
-	if !TagsEqual([]string{"b", "a"}, []string{"a", "b"}) {
-		t.Fatal("expected equal")
+	if !TagsEqual([]string{"a", "b"}, []string{"B", "A"}) {
+		t.Fatal("expected tags to be equal regardless of order/case")
 	}
 	if TagsEqual([]string{"a"}, []string{"a", "b"}) {
-		t.Fatal("expected not equal")
+		t.Fatal("expected tags to be unequal")
 	}
 }

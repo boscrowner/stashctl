@@ -29,7 +29,7 @@ func ParseTags(raw string) []string {
 	return NormalizeTags(parts)
 }
 
-// TagsEqual reports whether two tag slices contain the same tags.
+// TagsEqual returns true if two tag slices contain the same elements.
 func TagsEqual(a, b []string) bool {
 	na := NormalizeTags(a)
 	nb := NormalizeTags(b)
