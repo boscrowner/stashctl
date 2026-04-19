@@ -7,8 +7,8 @@ type Snippet struct {
 	ID        string    `json:"id"`
 	Title     string    `json:"title"`
 	Content   string    `json:"content"`
-	Tags      []string  `json:"tags"`
 	Language  string    `json:"language"`
+	Tags      []string  `json:"tags"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -47,11 +47,19 @@ func (s *Snippet) HasAllTags(tags []string) bool {
 	return true
 }
 
-// Update replaces editable fields and bumps UpdatedAt.
+// Update applies non-empty fields to the snippet and bumps UpdatedAt.
 func (s *Snippet) Update(title, content, language string, tags []string) {
-	s.Title = title
-	s.Content = content
-	s.Language = language
-	s.Tags = NormalizeTags(tags)
+	if title != "" {
+		s.Title = title
+	}
+	if content != "" {
+		s.Content = content
+	}
+	if language != "" {
+		s.Language = language
+	}
+	if tags != nil {
+		s.Tags = NormalizeTags(tags)
+	}
 	s.UpdatedAt = time.Now().UTC()
 }
