@@ -25,6 +25,7 @@ func newImportCmd(st *store.Store) *cobra.Command {
 					res.Errors = append(res.Errors, fmt.Sprintf("store error for %q: %v", s.Title, err))
 					continue
 				}
+				res.Imported++
 			}
 			fmt.Fprintf(cmd.OutOrStdout(), "Imported: %d, Skipped: %d\n", res.Imported, res.Skipped)
 			for _, e := range res.Errors {
