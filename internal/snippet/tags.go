@@ -24,8 +24,8 @@ func NormalizeTags(tags []string) []string {
 }
 
 // ParseTags splits a comma-separated tag string into normalized tags.
-func ParseTags(input string) []string {
-	parts := strings.Split(input, ",")
+func ParseTags(raw string) []string {
+	parts := strings.Split(raw, ",")
 	return NormalizeTags(parts)
 }
 

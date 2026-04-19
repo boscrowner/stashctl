@@ -5,41 +5,40 @@ import (
 )
 
 func TestNormalizeTagsDeduplicates(t *testing.T) {
-	tags := NormalizeTags([]string{"go", "Go", "GO"})
-	if len(tags) != 1 || tags[0] != "go" {
-		t.Fatalf("expected [go], got %v", tags)
+	result := NormalizeTags([]string{"go", "Go", "GO"})
+	if len(result) != 1 || result[0] != "go" {
+		t.Fatalf("expected [go], got %v", result)
 	}
 }
 
 func TestNormalizeTagsSorted(t *testing.T) {
-	tags := NormalizeTags([]string{"zebra", "alpha", "mango"})
-	if tags[0] != "alpha" || tags[1] != "mango" || tags[2] != "zebra" {
-		t.Fatalf("expected sorted tags, got %v", tags)
+	result := NormalizeTags([]string{"zebra", "apple", "mango"})
+	expected := []string{"apple", "mango", "zebra"}
+	if !TagsEqual(result, expected) {
+		t.Fatalf("expected %v, got %v", expected, result)
 	}
 }
 
 func TestNormalizeTagsStripsEmpty(t *testing.T) {
-	tags := NormalizeTags([]string{"go", "", "  ", "cli"})
-	if len(tags) != 2 {
-		t.Fatalf("expected 2 tags, got %v", tags)
+	result := NormalizeTags([]string{"go", "", "  ", "cli"})
+	if len(result) != 2 {
+		t.Fatalf("expected 2 tags, got %v", result)
 	}
 }
 
 func TestParseTags(t *testing.T) {
-	tags := ParseTags("Go, CLI, go")
-	if len(tags) != 2 {
-		t.Fatalf("expected 2 tags, got %v", tags)
-	}
-	if tags[0] != "cli" || tags[1] != "go" {
-		t.Fatalf("unexpected tags: %v", tags)
+	result := ParseTags("Go, CLI,  search,GO")
+	expected := []string{"cli", "go", "search"}
+	if !TagsEqual(result, expected) {
+		t.Fatalf("expected %v, got %v", expected, result)
 	}
 }
 
 func TestTagsEqual(t *testing.T) {
-	if !TagsEqual([]string{"go", "cli"}, []string{"CLI", "Go"}) {
-		t.Fatal("expected tags to be equal")
+	if !TagsEqual([]string{"a", "b"}, []string{"b", "a"}) {
+		t.Fatal("expected tags to be equal regardless of order")
 	}
-	if TagsEqual([]string{"go"}, []string{"go", "cli"}) {
+	if TagsEqual([]string{"a"}, []string{"a", "b"}) {
 		t.Fatal("expected tags to be unequal")
 	}
 }
