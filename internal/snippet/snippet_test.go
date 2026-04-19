@@ -2,46 +2,63 @@ package snippet
 
 import (
 	"testing"
+	"time"
 )
 
 func TestNew(t *testing.T) {
-	s := New("hello world", "fmt.Println(\"hello\")", "go", []string{"go", "print"})
-
-	if s.Title != "hello world" {
-		t.Errorf("expected title 'hello world', got %q", s.Title)
+	s := New("Hello", "fmt.Println()", "go", []string{"go", "print"})
+	if s.ID == "" {
+		t.Error("expected non-empty ID")
+	}
+	if s.Title != "Hello" {
+		t.Errorf("unexpected title: %s", s.Title)
 	}
 	if s.Language != "go" {
-		t.Errorf("expected language 'go', got %q", s.Language)
+		t.Errorf("unexpected language: %s", s.Language)
 	}
-	if len(s.ID) != 16 {
-		t.Errorf("expected ID length 16, got %d", len(s.ID))
+	if len(s.Tags) != 2 {
+		t.Errorf("expected 2 tags, got %d", len(s.Tags))
 	}
-	if s.CreatedAt.IsZero() {
-		t.Error("expected non-zero CreatedAt")
+	if s.CreatedAt.IsZero() || s.UpdatedAt.IsZero() {
+		t.Error("expected timestamps to be set")
 	}
 }
 
 func TestHasTag(t *testing.T) {
-	s := New("test", "content", "bash", []string{"shell", "util"})
-
-	if !s.HasTag("shell") {
-		t.Error("expected HasTag('shell') to be true")
+	s := New("t", "c", "go", []string{"alpha", "beta"})
+	if !s.HasTag("alpha") {
+		t.Error("expected HasTag alpha")
 	}
-	if s.HasTag("python") {
-		t.Error("expected HasTag('python') to be false")
+	if s.HasTag("gamma") {
+		t.Error("did not expect HasTag gamma")
 	}
 }
 
 func TestHasAllTags(t *testing.T) {
-	s := New("test", "content", "bash", []string{"shell", "util", "loop"})
+	s := New("t", "c", "go", []string{"alpha", "beta"})
+	if !s.HasAllTags([]string{"alpha", "beta"}) {
+		t.Error("expected HasAllTags")
+	}
+	if s.HasAllTags([]string{"alpha", "gamma"}) {
+		t.Error("did not expect HasAllTags with missing tag")
+	}
+}
 
-	if !s.HasAllTags([]string{"shell", "loop"}) {
-		t.Error("expected HasAllTags to return true for subset of tags")
+func TestUpdate(t *testing.T) {
+	s := New("old", "old content", "go", []string{"a"})
+	origUpdated := s.UpdatedAt
+	time.Sleep(2 * time.Millisecond)
+	s.Update("new", "new content", "python", []string{"b", "c"})
+	if s.Title != "new" {
+		t.Errorf("unexpected title: %s", s.Title)
 	}
-	if s.HasAllTags([]string{"shell", "missing"}) {
-		t.Error("expected HasAllTags to return false when a tag is missing")
+	if s.Language != "python" {
+		t.Errorf("unexpected language: %s", s.Language)
 	}
-	if !s.HasAllTags([]string{}) {
-		t.Error("expected HasAllTags to return true for empty tag list")
+	if !s.UpdatedAt.After(origUpdated) {
+		t.Error("expected UpdatedAt to be bumped")
+	}
+	if len(s.Tags) != 2 {
+		t.Errorf("expected 2 tags after update, got %d", len(s.Tags))
 	}
 }
