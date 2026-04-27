@@ -27,6 +27,10 @@ func newFavoriteAddCmd(env *cmdEnv) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			if s.Favorite {
+				fmt.Fprintf(cmd.OutOrStdout(), "%s is already a favorite\n", s.ID)
+				return nil
+			}
 			snippet.Favorite(s)
 			if err := env.store.Update(s); err != nil {
 				return err
@@ -46,6 +50,10 @@ func newFavoriteRemoveCmd(env *cmdEnv) *cobra.Command {
 			s, err := env.store.Get(args[0])
 			if err != nil {
 				return err
+			}
+			if !s.Favorite {
+				fmt.Fprintf(cmd.OutOrStdout(), "%s is not a favorite\n", s.ID)
+				return nil
 			}
 			snippet.Unfavorite(s)
 			if err := env.store.Update(s); err != nil {
@@ -67,6 +75,10 @@ func newFavoriteListCmd(env *cmdEnv) *cobra.Command {
 				return err
 			}
 			favs := snippet.Favorites(all)
+			if len(favs) == 0 {
+				fmt.Fprintln(cmd.OutOrStdout(), "no favorite snippets found")
+				return nil
+			}
 			for _, s := range favs {
 				fmt.Fprintln(cmd.OutOrStdout(), env.formatter.SnippetSummary(s))
 			}
