@@ -69,3 +69,17 @@ func (s *Store) DeleteWebhook(id string) error {
 	}
 	return s.saveWebhooks(updated)
 }
+
+// GetWebhook returns a single webhook by ID, or an error if not found.
+func (s *Store) GetWebhook(id string) (snippet.Webhook, error) {
+	hooks, err := s.loadWebhooks()
+	if err != nil {
+		return snippet.Webhook{}, err
+	}
+	for _, h := range hooks {
+		if h.ID == id {
+			return h, nil
+		}
+	}
+	return snippet.Webhook{}, errors.New("webhook not found: " + id)
+}
