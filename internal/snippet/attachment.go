@@ -76,3 +76,14 @@ func RemoveAttachment(attachments []Attachment, id string) ([]Attachment, bool) 
 	}
 	return attachments, false
 }
+
+// FindAttachment returns the attachment with the given ID and true if found,
+// or a zero-value Attachment and false if no match exists.
+func FindAttachment(attachments []Attachment, id string) (Attachment, bool) {
+	for _, a := range attachments {
+		if a.ID == id {
+			return a, true
+		}
+	}
+	return Attachment{}, false
+}
