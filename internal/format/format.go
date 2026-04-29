@@ -51,3 +51,16 @@ func SnippetDetail(s snippet.Snippet, colorize bool) string {
 	}
 	return sb.String()
 }
+
+// SnippetList returns a formatted string of multiple snippets, one per line.
+// It is a convenience wrapper around SnippetSummary for a slice of snippets.
+func SnippetList(snippets []snippet.Snippet, colorize bool) string {
+	if len(snippets) == 0 {
+		return ""
+	}
+	lines := make([]string, len(snippets))
+	for i, s := range snippets {
+		lines[i] = SnippetSummary(s, colorize)
+	}
+	return strings.Join(lines, "\n") + "\n"
+}
